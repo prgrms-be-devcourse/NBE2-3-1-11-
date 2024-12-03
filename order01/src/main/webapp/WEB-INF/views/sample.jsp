@@ -1,7 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <!-- Required meta tags -->
@@ -12,63 +9,63 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
   <style>
-      body {
-          background: #ddd;
-      }
+    body {
+      background: #ddd;
+    }
 
-      .card {
-          margin: auto;
-          max-width: 950px;
-          width: 90%;
-          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-          border-radius: 1rem;
-          border: transparent
-      }
+    .card {
+      margin: auto;
+      max-width: 950px;
+      width: 90%;
+      box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 1rem;
+      border: transparent
+    }
 
+    .summary {
+      background-color: #ddd;
+      border-top-right-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+      padding: 4vh;
+      color: rgb(65, 65, 65)
+    }
+
+    @media (max-width: 767px) {
       .summary {
-          background-color: #ddd;
-          border-top-right-radius: 1rem;
-          border-bottom-right-radius: 1rem;
-          padding: 4vh;
-          color: rgb(65, 65, 65)
+        border-top-right-radius: unset;
+        border-bottom-left-radius: 1rem
       }
+    }
 
-      @media (max-width: 767px) {
-          .summary {
-              border-top-right-radius: unset;
-              border-bottom-left-radius: 1rem
-          }
-      }
+    .row {
+      margin: 0
+    }
 
-      .row {
-          margin: 0
-      }
+    .title b {
+      font-size: 1.5rem
+    }
 
-      .title b {
-          font-size: 1.5rem
-      }
+    .col-2,
+    .col {
+      padding: 0 1vh
+    }
 
-      .col-2,
-      .col {
-          padding: 0 1vh
-      }
+    img {
+      width: 3.5rem
+    }
 
-      img {
-          width: 3.5rem
-      }
-
-      hr {
-          margin-top: 1.25rem
-      }
-      .products {
-          width: 100%;
-      }
-      .products .price, .products .action {
-          line-height: 38px;
-      }
-      .products .action {
-          line-height: 38px;
-      }
+    hr {
+      margin-top: 1.25rem
+    }
+    .products {
+      width: 100%;
+    }
+    .products .price, .products .action {
+      line-height: 38px;
+    }
+    .products .action {
+      line-height: 38px;
+    }
 
   </style>
   <title>Hello, world!</title>
@@ -144,7 +141,9 @@
         <h5 class="col">총금액</h5>
         <h5 class="col text-end">15000원</h5>
       </div>
-      <button class="btn btn-dark col-12">결제하기</button>
+      <button class="btn btn-dark col-12" style="width:45%;">결제하기</button> <button class="btn btn-dark col-12" style="width:45%;">주문조회</button>
+
+
     </div>
   </div>
 </div>
