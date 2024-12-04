@@ -5,16 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.security.Timestamp;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderTO {
+public class OrderItemTO {
+    private long orderItemId;
+    private int quantity;
+    private long productId;
     private long orderId;
-    private String email;
-    private Timestamp date;
-    private String address;
-    private String zipcode;
 }
