@@ -1,13 +1,20 @@
 package com.example.order.controller;
 
+import com.example.order.dao.OrderDAO;
 import com.example.order.dto.OrderTO;
 import com.example.order.dto.ProductTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
 @RestController
 public class OrderController {
+
+    @Autowired
+    private OrderDAO orderDAO;
 
     @GetMapping("/products")
     public ArrayList<ProductTO> getAllProducts() {
@@ -30,8 +37,18 @@ public class OrderController {
     }
 
     @DeleteMapping("/order/{id}")
-    public String deleteOrder(@PathVariable long id) {
-        return "Order deleted successfully"; // 실제 삭제 로직에 따라 조정 필요
+    public ResponseEntity<String> deleteOrder(@PathVariable long id) {
+        // 주문 상품 지우기
+        boolean orderItemsDeleted = orderDAO.deleteOrderItemsByOrderId(id);
+        if(!orderItemsDeleted) return new ResponseEntity<>("order Item not found", HttpStatus.NOT_FOUND);
+
+        // 주문 지우기
+        boolean isDeleted = orderDAO.deleteOrder(id);
+        if (isDeleted) {
+            return new ResponseEntity<>("order delete success", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("order not found", HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/orders/{id}/show")
