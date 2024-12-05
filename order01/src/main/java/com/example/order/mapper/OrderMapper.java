@@ -10,6 +10,7 @@ public interface OrderMapper {
     int deleteOrderItemsByOrderId(long orderId);
 
     // 주문 삭제
+    //TODO 배송 전 주문인지 확인 로직 추가 구현 필요
     @Delete("DELETE FROM orders WHERE orderId = #{orderId}")
     int deleteOrder(long orderId);
 }
