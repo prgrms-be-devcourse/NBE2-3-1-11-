@@ -30,7 +30,7 @@ public class AdminController {
     }
 
     @PutMapping("/product")
-    public ResponseEntity<String> modifyProduct( @RequestBody ProductTO product) {
+    public ResponseEntity<String> modifyProduct(@RequestBody ProductTO product) {
         // 상품 수정
         boolean isUpdated = productDAO.updateProduct(product);
 
