@@ -2,4 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.order.mapper.OrderMapper">
 
+    <insert id="createOrder" parameterType="com.example.order.dto.OrderTO" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO orders (email, address, zipcode, totalPrice, date)
+        VALUES (#{email}, #{address}, #{zipcode}, #{totalPrice}, #{date});
+    </insert>
+
+
+    <insert id="createOrderItem" parameterType="com.example.order.dto.OrderItemTO">
+        INSERT INTO orderitem (quantity, orderId, productId)
+        VALUES (#{quantity}, #{orderId}, #{productId});
+    </insert>
+
+    <select id="productAll" resultType="ProductTO">
+        select productId, name, price
+        from product
+    </select>
+
+    <!-- 관리자 : 상품 등록 -->
+    <insert id="insert" parameterType="ProductTO">
+        insert into product
+        values ( #{productId}, #{name}, #{price} )
+    </insert>
+
 </mapper>
