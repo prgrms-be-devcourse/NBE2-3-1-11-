@@ -10,11 +10,6 @@ public class OrderDAO {
     @Autowired
     private OrderMapper orderMapper;
 
-    // 주문 상품 삭제
-    public boolean deleteOrderItemsByOrderId(long orderId) {
-        return orderMapper.deleteOrderItemsByOrderId(orderId) > 0;
-    }
-
     // 주문 삭제
     public boolean deleteOrder(long orderId) {
         return orderMapper.deleteOrder(orderId) > 0;

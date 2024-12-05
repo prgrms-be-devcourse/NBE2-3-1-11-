@@ -38,11 +38,6 @@ public class OrderController {
 
     @DeleteMapping("/order/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable long id) {
-        // 주문 상품 지우기
-        boolean orderItemsDeleted = orderDAO.deleteOrderItemsByOrderId(id);
-        if(!orderItemsDeleted) return new ResponseEntity<>("order Item not found", HttpStatus.NOT_FOUND);
-
-        // 주문 지우기
         boolean isDeleted = orderDAO.deleteOrder(id);
         if (isDeleted) {
             return new ResponseEntity<>("order delete success", HttpStatus.OK);
