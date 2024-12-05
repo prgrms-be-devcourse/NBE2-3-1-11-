@@ -11,7 +11,7 @@
     <select id="todayOrder"  resultType="HashMap">
         SELECT
             B.name AS product,
-            SUM(A.quantity) AS total_quantity
+            SUM(A.quantity) AS quantity
         FROM
             orderitem A
                 inner JOIN product B ON A.productId = B.productId
