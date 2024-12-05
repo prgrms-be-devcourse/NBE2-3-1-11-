@@ -14,10 +14,4 @@ public class ProductDAO {
     public boolean updateProduct(ProductTO product) {
         return productMapper.updateProduct(product) > 0;
     }
-
-
-    // 상품 삭제
-    public int deleteProduct(long id ) {
-        return productMapper.deleteProduct(id);
-    }
 }
