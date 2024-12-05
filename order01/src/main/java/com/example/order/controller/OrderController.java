@@ -20,7 +20,7 @@ public class OrderController {
 
     @GetMapping("/products")
     public ArrayList<ProductTO> getAllProducts() {
-        return new ArrayList<>(); // 실제 상품 목록으로 대체 필요 테스트
+        return new ArrayList<>(); // 실제 상품 목록으로 대체 필요
     }
 
     @PostMapping("/order")
