@@ -18,6 +18,8 @@
                 inner JOIN orders C ON A.orderId = C.orderId
         where
             DATE(C.date) = CURDATE()
+            and
+            C.email = #{email}
         GROUP BY
             B.name;
     </select>
