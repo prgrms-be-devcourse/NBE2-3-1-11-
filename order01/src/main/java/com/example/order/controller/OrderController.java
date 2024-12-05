@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class OrderController {
@@ -18,7 +20,7 @@ public class OrderController {
 
     @GetMapping("/products")
     public ArrayList<ProductTO> getAllProducts() {
-        return new ArrayList<>(); // 실제 상품 목록으로 대체 필요
+        return new ArrayList<>(); // 실제 상품 목록으로 대체 필요 테스트
     }
 
     @PostMapping("/order")
@@ -26,9 +28,16 @@ public class OrderController {
         return "Order added successfully"; // 실제 주문 처리 로직에 따라 조정 필요
     }
 
-    @GetMapping("/orders")
-    public ArrayList<OrderTO> getOrders(@RequestParam String email) {
-        return new ArrayList<>(); // 실제 주문 목록으로 대체 필요
+    @GetMapping("/order/{email}")
+    public ArrayList<OrderTO> getOrders(@PathVariable String email) {
+        ArrayList<OrderTO> lists = orderDAO.orderList(email);
+        return lists;
+    }
+
+    @GetMapping("/order/{email}/today")
+    public List<Map<String,Object>> getTodayOrders(@PathVariable String email) {
+        List<Map<String,Object>> lists = orderDAO.todayOrder(email);
+        return lists;
     }
 
     @PutMapping("/order/{id}")

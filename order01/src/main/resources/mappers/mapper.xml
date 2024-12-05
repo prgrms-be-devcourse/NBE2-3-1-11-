@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.order.mapper.OrderMapper">
-
+    <select id="orderList" parameterType="String" resultType="to">
+        select c.name as product, c.price , a.quantity, b.date, b.email, b.address, b.zipcode
+        from orderitem A
+                 inner join orders B on A.orderId = B.orderId
+                 inner join product C on A.productId = C.productId
+        where B.email = #{email}
+    </select>
+    <select id="todayOrder"  resultType="HashMap">
+        SELECT
+            B.name AS product,
+            SUM(A.quantity) AS total_quantity
+        FROM
+            orderitem A
+                inner JOIN product B ON A.productId = B.productId
+                inner JOIN orders C ON A.orderId = C.orderId
+        where
+            DATE(C.date) = CURDATE()
+        GROUP BY
+            B.name;
+    </select>
 </mapper>
