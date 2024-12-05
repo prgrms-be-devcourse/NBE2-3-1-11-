@@ -1,17 +1,22 @@
 package com.example.order.controller;
 
+import com.example.order.dao.OrderDAO;
 import com.example.order.dto.OrderTO;
 import com.example.order.dto.ProductTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
 @RestController
 public class OrderController {
+    @Autowired
+    private OrderDAO orderDAO;
 
+    // 상품 목록 조회
     @GetMapping("/products")
     public ArrayList<ProductTO> getAllProducts() {
-        return new ArrayList<>(); // 실제 상품 목록으로 대체 필요
+        return orderDAO.productAll(); // 실제 상품 목록으로 대체 필요
     }
 
     @PostMapping("/order")

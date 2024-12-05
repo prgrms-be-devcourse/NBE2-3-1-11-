@@ -1,5 +1,6 @@
 package com.example.order.controller;
 
+import com.example.order.dao.OrderDAO;
 import com.example.order.dao.ProductDAO;
 import com.example.order.dto.OrderTO;
 import com.example.order.dto.ProductTO;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 public class AdminController {
     @Autowired
     private ProductDAO productDAO;
+    @Autowired
+    private OrderDAO orderDAO;
 
     @GetMapping("/products")
     public ArrayList<ProductTO> getAllProducts() {
@@ -26,6 +29,15 @@ public class AdminController {
 
     @PostMapping("/product")
     public String addProduct(@RequestBody ProductTO productto) {
+        ProductTO to = new ProductTO();
+
+        long productId = productto.getProductId();
+        to.setProductId(productId);
+        to.setName(productto.getName());
+        int price = productto.getPrice();
+        to.setPrice(price);
+
+        int flag = productDAO.insert(to);
         return "Product added successfully"; // 실제 상품 등록 로직에 따라 조정 필요
     }
 
