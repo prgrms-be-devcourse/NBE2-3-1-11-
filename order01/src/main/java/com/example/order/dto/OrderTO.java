@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -25,5 +26,6 @@ public class OrderTO {
     private String address;
     private String zipcode;
 
+    private int totalPrice;
 
 }

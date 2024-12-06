@@ -2,6 +2,7 @@ package com.example.order.controller;
 
 import com.example.order.dao.OrderDAO;
 import com.example.order.dto.OrderItemTO;
+import com.example.order.dto.OrderRequest;
 import com.example.order.dto.OrderTO;
 import com.example.order.dto.ProductTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,17 +18,23 @@ import java.util.Map;
 @RestController
 public class OrderController {
 
-    @Autowired
-    private OrderDAO orderDAO;
+    private final OrderDAO orderDAO;
 
+    @Autowired
+    public OrderController(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
+    }
+
+    // 상품 목록 조회 - 영신
     @GetMapping("/products")
     public ArrayList<ProductTO> getAllProducts() {
-        return new ArrayList<>(); // 실제 상품 목록으로 대체 필요
+        return orderDAO.productAll();
     }
 
     @PostMapping("/order")
-    public String addOrder(@RequestBody OrderTO orderto) {
-        return "Order added successfully"; // 실제 주문 처리 로직에 따라 조정 필요
+    public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest) {
+        orderDAO.createOrder(orderRequest);
+        return ResponseEntity.ok("Order created successfully");
     }
 
     @GetMapping("/orders")
