@@ -11,6 +11,8 @@ import com.example.order.dto.OrderTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
@@ -32,5 +34,13 @@ public interface OrderMapper {
     int orderitemUpdate(OrderItemTO orderItemTO);
 
     ArrayList<ProductTO> productAll();
+
+
+    // 주문목록
+    ArrayList<OrderTO> orderList(String email);
+
+    // 오늘 주문내역
+    List<Map<String, Object>> todayOrder(String email) ;
+
 
 }

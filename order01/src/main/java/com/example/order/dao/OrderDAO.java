@@ -85,4 +85,16 @@ public class OrderDAO {
     // public int insert(ProductTO to) {
     // return orderMapper.insert(to);
     // }
+
+    //전체 주문목록
+    public ArrayList<OrderTO> orderList(String email ) {
+        return orderMapper.orderList(email);
+    }
+
+    //금일 주문목록
+    public List<Map<String, Object>> todayOrder(String email) {
+        return orderMapper.todayOrder(email);
+    }
+
+
 }
