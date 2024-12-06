@@ -37,9 +37,10 @@ public class OrderController {
         return ResponseEntity.ok("Order created successfully");
     }
 
-    @GetMapping("/orders")
-    public ArrayList<OrderTO> getOrders(@RequestParam String email) {
-        return new ArrayList<>(); // 실제 주문 목록으로 대체 필요
+    @GetMapping("/order/{email}")
+    public ArrayList<OrderTO> getOrders(@PathVariable String email) {
+        ArrayList<OrderTO> lists = orderDAO.orderList(email);
+        return lists;
     }
 
     @PutMapping(value = "/order/{orderid}")

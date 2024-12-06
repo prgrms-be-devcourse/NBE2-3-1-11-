@@ -25,6 +25,8 @@ public class AdminController {
   
     @Autowired
     private OrderDAO orderDAO;
+
+    @Autowired
     private ProductDAO productDAO;
 
 
@@ -54,8 +56,10 @@ public class AdminController {
 
 
     @DeleteMapping("/product/{id}")
-    public String deleteProduct(@PathVariable long id) {
-        return "Product deleted successfully"; // 실제 삭제 로직에 따라 조정 필요
+    public int deleteProduct(@PathVariable long id) {
+        int flag = productDAO.deleteProduct(id);
+
+        return flag; // 실제 삭제 로직에 따라 조정 필요
     }
 
     @GetMapping("/orders")

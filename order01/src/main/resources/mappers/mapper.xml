@@ -39,5 +39,29 @@
         values ( #{productId}, #{name}, #{price} )
     </insert>
 
+    <select id="orderList" parameterType="String" resultType="orderItemTO">
+        select  c.name as product, c.price , a.quantity, b.date, b.email, b.address, b.zipcode
+        from orderitem A
+                 inner join orders B on A.orderId = B.orderId
+                 inner join product C on A.productId = C.productId
+        where B.email = #{email}
+    </select>
+    <select id="todayOrder"  resultType="HashMap">
+        SELECT
+            B.name AS product,
+            SUM(A.quantity) AS quantity
+        FROM
+            orderitem A
+                inner JOIN product B ON A.productId = B.productId
+                inner JOIN orders C ON A.orderId = C.orderId
+        where
+            DATE(C.date) = CURDATE()
+          and
+            C.email = #{email}
+        GROUP BY
+            B.name;
+    </select>
+
+
 
 </mapper>
