@@ -1,11 +1,17 @@
 package com.example.order.controller;
 
+import com.example.order.dao.OrderDAO;
+import com.example.order.dto.OrderTO;
+import com.example.order.dto.ProductTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import com.example.order.dao.ProductDAO;
 import com.example.order.dto.OrderTO;
 import com.example.order.dto.ProductTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,12 +22,16 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/admin") // 공통 URL
 public class AdminController {
+  
     @Autowired
+    private OrderDAO orderDAO;
     private ProductDAO productDAO;
 
-    @GetMapping("/products")
-    public ArrayList<ProductTO> getAllProducts() {
-        return new ArrayList<>(); // 실제 상품 목록으로 대체 필요
+
+    @GetMapping(value = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ArrayList<ProductTO> products() {
+        ArrayList<ProductTO> products = orderDAO.product_list();
+        return products;
     }
 
     @PostMapping("/product")
