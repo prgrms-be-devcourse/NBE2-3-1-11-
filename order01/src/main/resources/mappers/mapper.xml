@@ -2,4 +2,113 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.order.mapper.OrderMapper">
 
+    <update id="orderUpdate" parameterType="orderTO">
+        update orders
+        set email= #{email}, address=#{address}, zipcode=#{zipcode},totalprice=#{totalPrice}
+        where orderid=#{orderId}
+    </update>
+
+    <update id="orderitemUpdate" parameterType="orderItemTO">
+        update orderitem
+        set quantity=#{quantity}
+        where orderid=#{orderId} and productid=#{productId}
+    </update>
+
+    <select id="productPrice" parameterType="long" resultType="int">
+        select price from product where productid=#{productId}
+    </select>
+
+    <select id="productList" resultType="productTO">
+        select * from product order by productId
+    </select>
+
+
+    <insert id="createOrder" parameterType="OrderTO" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO orders (email, address, zipcode, totalPrice, date)
+        VALUES (#{email}, #{address}, #{zipcode}, #{totalPrice}, #{date});
+    </insert>
+
+
+    <insert id="createOrderItem" parameterType="OrderItemTO">
+        INSERT INTO orderitem (quantity, orderId, productId)
+        VALUES (#{quantity}, #{orderId}, #{productId});
+    </insert>
+
+    <select id="productAll" resultType="ProductTO">
+        select productId, name, price, imgsrc
+        from product
+    </select>
+
+    <!-- 사용자 페이지 - 주문 조회 -->
+    <select id="orderList" parameterType="String" resultType="OrderResponse">
+        SELECT
+            o.orderId,
+            o.email,
+            o.address,
+            o.zipcode,
+            o.totalPrice,
+            o.date
+        FROM
+            orders o
+        WHERE
+            o.email = #{email}
+    </select>
+
+    <!-- 관리자 페이지 - 모든 주문 조회 -->
+    <select id="getAllOrders" resultType="OrderResponse">
+        SELECT
+            o.orderId,
+            o.email,
+            o.address,
+            o.zipcode,
+            o.totalPrice,
+            o.date
+        FROM orders o
+    </select>
+
+    <!-- 주문 목록 조회 -->
+    <select id="getOrderDetail" parameterType="long" resultMap="orderResponseMap">
+        SELECT
+            o.orderId,
+            o.email,
+            o.address,
+            o.zipcode,
+            o.totalPrice,
+            o.date
+        FROM
+            orders o
+        WHERE o.orderId=#{id}
+    </select>
+
+    <!-- 하위 주문 아이템 목록 조회 및 상품 상세 정보 포함 -->
+    <select id="getOrderItems" resultType="OrderItemDetail">
+        SELECT
+            oi.orderItemId,
+            oi.quantity,
+            p.name AS name,        -- 상품 이름
+            p.price AS price,      -- 상품 가격
+            p.imgsrc AS imgsrc,    -- 상품 이미지 URL
+            oi.productId,
+            oi.orderId
+        FROM
+            orderitem oi
+                JOIN
+            product p ON oi.productId = p.productId
+        WHERE
+            oi.orderId = #{orderId}
+    </select>
+
+    <!-- 주문 정보와 아이템 목록 매핑 -->
+    <resultMap id="orderResponseMap" type="OrderResponse">
+        <id property="orderId" column="orderId"/>
+        <result property="email" column="email"/>
+        <result property="address" column="address"/>
+        <result property="zipcode" column="zipcode"/>
+        <result property="totalPrice" column="totalPrice"/>
+        <result property="date" column="date"/>
+
+        <!-- OrderItemDetail 리스트 매핑 -->
+        <collection property="items" ofType="OrderItemDetail" column="orderId" select="getOrderItems"/>
+    </resultMap>
+
 </mapper>
