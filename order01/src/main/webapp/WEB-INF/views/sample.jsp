@@ -1,9 +1,38 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!doctype html>
 <html lang="en">
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("checkOrders").addEventListener("click", function () {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/samplePage/orders-list/customer@example.com", true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText) ;
+            //list, orderform 그리기
+            document.getElementById("orderList").innerHTML =json.sbHtml_list;
+            document.getElementById("orderForm").innerHTML =json.sbHtml_form;
+
+            //리스트 카테고리 listCateg
+            document.getElementById("listCateg").innerHTML = "<b>주문 목록</b>"
+            //버튼처리
+            document.getElementById("pay").style.display ="none"
+            document.getElementById("checkOrders").style.display ="none"
+            document.getElementById("home").style.display =""
+          }
+        };
+        xhr.send();
+      });
+    });
+
+
+  </script>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -77,51 +106,25 @@
 <div class="card">
   <div class="row">
     <div class="col-md-8 mt-4 d-flex flex-column align-items-start p-3 pt-0">
-      <h5 class="flex-grow-0"><b>상품 목록</b></h5>
-      <ul class="list-group products">
-        <li class="list-group-item d-flex mt-3">
-          <div class="col-2"><img class="img-fluid" src="https://i.imgur.com/HKOFQYa.jpeg" alt=""></div>
-          <div class="col">
-            <div class="row text-muted">커피콩</div>
-            <div class="row">Columbia Nariñó</div>
-          </div>
-          <div class="col text-center price">5000원</div>
-          <div class="col text-end action"><a class="btn btn-small btn-outline-dark" href="">추가</a></div>
-        </li>
-        <li class="list-group-item d-flex mt-2">
-          <div class="col-2"><img class="img-fluid" src="https://i.imgur.com/HKOFQYa.jpeg" alt=""></div>
-          <div class="col">
-            <div class="row text-muted">커피콩</div>
-            <div class="row">Columbia Nariñó</div>
-          </div>
-          <div class="col text-center price">5000원</div>
-          <div class="col text-end action"><a class="btn btn-small btn-outline-dark" href="">추가</a></div>
-        </li>
-        <li class="list-group-item d-flex mt-2">
-          <div class="col-2"><img class="img-fluid" src="https://i.imgur.com/HKOFQYa.jpeg" alt=""></div>
-          <div class="col">
-            <div class="row text-muted">커피콩</div>
-            <div class="row">Columbia Nariñó</div>
-          </div>
-          <div class="col text-center price">5000원</div>
-          <div class="col text-end action"><a class="btn btn-small btn-outline-dark" href="">추가</a></div>
-        </li>
+      <h5 class="flex-grow-0" id="listCateg"><b>상품 목록</b></h5>
+      <ul class="list-group products"  id="orderList">
+
       </ul>
     </div>
-    <div class="col-md-4 summary p-4">
+    <div class="col-md-4 summary p-4" id="orderForm">
       <div>
         <h5 class="m-0 p-0"><b>Summary</b></h5>
       </div>
       <hr>
-      <div class="row">
-        <h6 class="p-0">Columbia Nariñó <span class="badge bg-dark text-">2개</span></h6>
-      </div>
-      <div class="row">
-        <h6 class="p-0">Brazil Serra Do Caparaó <span class="badge bg-dark">2개</span></h6>
-      </div>
-      <div class="row">
-        <h6 class="p-0">Columbia Nariñó <span class="badge bg-dark">2개</span></h6>
-      </div>
+<%--      <div class="row">--%>
+<%--        <h6 class="p-0">Columbia Nariñó <span class="badge bg-dark text-">2개</span></h6>--%>
+<%--      </div>--%>
+<%--      <div class="row">--%>
+<%--        <h6 class="p-0">Brazil Serra Do Caparaó <span class="badge bg-dark">2개</span></h6>--%>
+<%--      </div>--%>
+<%--      <div class="row">--%>
+<%--        <h6 class="p-0">Columbia Nariñó <span class="badge bg-dark">2개</span></h6>--%>
+<%--      </div>--%>
       <form>
         <div class="mb-3">
           <label for="email" class="form-label">이메일</label>
@@ -141,7 +144,9 @@
         <h5 class="col">총금액</h5>
         <h5 class="col text-end">15000원</h5>
       </div>
-      <button class="btn btn-dark col-12" style="width:45%;">결제하기</button> <button class="btn btn-dark col-12" style="width:45%;">주문조회</button>
+      <button class="btn btn-dark col-12" id="pay" style="width:45%;">결제하기</button>
+      <button class="btn btn-dark col-12" id="checkOrders"  style="width:45%;">주문조회</button>
+      <button class="btn btn-dark col-12" id="home"  style="width:100%;display:none;  ">돌아가기</button>
 
 
     </div>

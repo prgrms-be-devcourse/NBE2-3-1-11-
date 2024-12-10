@@ -10,10 +10,13 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Alias(value="orderItemTO")
-public class OrderItemTO {
+@Alias(value="OrderItemDetail")
+public class OrderItemDetail {
     private long orderItemId;
     private int quantity;
+    private String name;
+    private int price;
+    private String imgsrc;
     private long productId;
     private long orderId;
 }

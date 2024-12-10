@@ -1,13 +1,7 @@
 package com.example.order.dao;
 
-import com.example.order.dto.OrderItemTO;
-
-import com.example.order.dto.OrderTO;
-import com.example.order.dto.OrderRequest;
-
-import com.example.order.dto.ProductTO;
+import com.example.order.dto.*;
 import com.example.order.mapper.OrderMapper;
-import com.example.order.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,79 +16,115 @@ public class OrderDAO {
     @Autowired
     private OrderMapper orderMapper;
 
-    @Autowired
-    private ProductMapper productMapper;
-
+    // 사용자 페이지 - 주문하기
     public void createOrder(OrderRequest orderRequest) {
-
         List<ProductTO> products = orderMapper.productAll();
-        Map<Long, Integer> productPriceMap = new HashMap<>();
+        Map<Long, Integer> productPriceMap = createProductPriceMap(products);
 
-        for (ProductTO product : products) {
-            productPriceMap.put(product.getProductId(), product.getPrice());
-        }
-
-        // 총 가격 계산
-        int totalPrice = 0;
-
-        // 각 아이템 가격을 가져와서 총 가격을 계산
-        for (OrderItemTO item : orderRequest.getItems()) {
-            Integer price = productPriceMap.get(item.getProductId()); // 가격 조회
-            if (price != null) {
-                totalPrice += price * item.getQuantity(); // 가격 계산
-            } else {
-                throw new IllegalArgumentException("Product not found: " + item.getProductId());
-            }
-        }
-
-        // 주문 객체에 총 가격 설정
+        int totalPrice = calculateTotalPrice(orderRequest.getItems(), productPriceMap);
         orderRequest.getOrder().setTotalPrice(totalPrice);
 
-        // 주문 생성
         orderMapper.createOrder(orderRequest.getOrder());
-
-        // 아이템 추가
         long newOrderId = orderRequest.getOrder().getOrderId();
-
-        for (OrderItemTO item : orderRequest.getItems()) {
-            item.setOrderId(newOrderId); // 생성된 orderId 설정
-            orderMapper.createOrderItem(item);
-        }
+        addOrderItems(orderRequest.getItems(), newOrderId);
     }
 
-    // 주문 삭제
+    // 사용자 페이지 - 주문 삭제
     public boolean deleteOrder(long orderId) {
         return orderMapper.deleteOrder(orderId) > 0;
     }
 
-    // 상품 조회
+
+    // 사용자 페이지 - 해당 email 주문 수정
+    public int updateOrder(OrderRequest orderRequest) {
+        OrderTO orderTO = orderRequest.getOrder();
+        List<OrderItemTO> itemList = orderRequest.getItems();
+
+        int totalPrice = calculateTotalPriceForUpdate(itemList);
+        orderTO.setTotalPrice(totalPrice);
+
+        // 주문 아이템과 주문 업데이트
+        return updateOrderItems(itemList) && orderMapper.orderUpdate(orderTO) > 0 ? 1 : 0;
+    }
+
+
+    // 사용자 페이지 - 모든 상품 조회
+    public ArrayList<ProductTO> productAll() {
+        return orderMapper.productAll();
+    }
+
+    // 사용자 페이지 - 전체 주문 목록 조회
+    public ArrayList<OrderResponse> orderList(String email) {
+        ArrayList<OrderResponse> orders = orderMapper.orderList(email);
+        for (OrderResponse order : orders) {
+            order.setItems(orderMapper.getOrderItems(order.getOrderId())); // 주문 아이템 추가
+        }
+        return orders;
+    }
+
+    // 관리자 페이지 - 모든 상품 조회
     public ArrayList<ProductTO> product_list() {
         return orderMapper.productList();
     }
-    // 주문 수정
-    public int order_update(OrderTO orderTO) {
-        return orderMapper.orderUpdate(orderTO);
-    }
-    public int orderitem_update(OrderItemTO orderItemTO) {
-        return orderMapper.orderitemUpdate(orderItemTO);
+
+    // 관리자 페이지 - 모든 주문 조회
+    public ArrayList<OrderTO> getAllOrders() {
+        return orderMapper.getAllOrders();
     }
 
-    // 상품 목록 조회 메서드
-    public ArrayList<ProductTO> productAll() { return orderMapper.productAll(); }
-    // 관리자 ) 상품 등록 메서드
-    // public int insert(ProductTO to) {
-    // return orderMapper.insert(to);
-    // }
-
-    //전체 주문목록
-    public ArrayList<OrderTO> orderList(String email ) {
-        return orderMapper.orderList(email);
+    // 관리자 페이지 - 주문 상세 보기
+    public OrderResponse getOrdersDetail(long orderId) {
+        return orderMapper.getOrderDetail(orderId);
     }
 
-    //금일 주문목록
-    public List<Map<String, Object>> todayOrder(String email) {
-        return orderMapper.todayOrder(email);
+    // Helper 메서드: 상품 가격 맵 생성
+    private Map<Long, Integer> createProductPriceMap(List<ProductTO> products) {
+        Map<Long, Integer> productPriceMap = new HashMap<>();
+        for (ProductTO product : products) {
+            productPriceMap.put(product.getProductId(), product.getPrice());
+        }
+        return productPriceMap;
     }
 
+    // Helper 메서드: 총 가격 계산
+    private int calculateTotalPrice(List<OrderItemTO> items, Map<Long, Integer> productPriceMap) {
+        int totalPrice = 0;
+        for (OrderItemTO item : items) {
+            Integer price = productPriceMap.get(item.getProductId());
+            if (price != null) {
+                totalPrice += price * item.getQuantity();
+            } else {
+                throw new IllegalArgumentException("Product not found: " + item.getProductId());
+            }
+        }
+        return totalPrice;
+    }
 
+    // Helper 메서드: 주문 아이템 추가
+    private void addOrderItems(List<OrderItemTO> items, long orderId) {
+        for (OrderItemTO item : items) {
+            item.setOrderId(orderId);
+            orderMapper.createOrderItem(item);
+        }
+    }
+
+    // Helper 메서드: 주문 수정 시 가격 계산
+    private int calculateTotalPriceForUpdate(List<OrderItemTO> itemList) {
+        int totalPrice = 0;
+        for (OrderItemTO item : itemList) {
+            totalPrice += item.getQuantity() * orderMapper.productPrice(item.getProductId());
+        }
+        return totalPrice;
+    }
+
+    // Helper 메서드: 주문 아이템 업데이트
+    private boolean updateOrderItems(List<OrderItemTO> itemList) {
+        boolean allUpdated = true;
+        for (OrderItemTO item : itemList) {
+            if (orderMapper.orderitemUpdate(item) == 0) {
+                allUpdated = false;
+            }
+        }
+        return allUpdated;
+    }
 }

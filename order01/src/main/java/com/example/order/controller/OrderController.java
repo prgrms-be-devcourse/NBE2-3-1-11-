@@ -1,21 +1,22 @@
 package com.example.order.controller;
 
 import com.example.order.dao.OrderDAO;
-import com.example.order.dto.OrderItemTO;
-import com.example.order.dto.OrderRequest;
-import com.example.order.dto.OrderTO;
-import com.example.order.dto.ProductTO;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.order.dto.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Map;
 
 @RestController
+@RequestMapping("/user")
+@Tag(name = "사용자 API")
 public class OrderController {
 
     private final OrderDAO orderDAO;
@@ -25,60 +26,53 @@ public class OrderController {
         this.orderDAO = orderDAO;
     }
 
-    // 상품 목록 조회 - 영신
     @GetMapping("/products")
-    public ArrayList<ProductTO> getAllProducts() {
-        return orderDAO.productAll();
-    }
-
-    @PostMapping("/order")
-    public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest) {
-        orderDAO.createOrder(orderRequest);
-        return ResponseEntity.ok("Order created successfully");
+    @Operation(summary = "모든 상품 조회")
+    public ResponseEntity<ArrayList<ProductTO>> getAllProducts() {
+        ArrayList<ProductTO> products = orderDAO.productAll();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/order/{email}")
-    public ArrayList<OrderTO> getOrders(@PathVariable String email) {
-        ArrayList<OrderTO> lists = orderDAO.orderList(email);
-        return lists;
+    @Operation(summary = "email로 주문 조회")
+    public ResponseEntity<ArrayList<OrderResponse>> getOrders(@PathVariable String email) {
+        ArrayList<OrderResponse> orders = orderDAO.orderList(email);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/order/{orderid}")
-    public String putOrder(@PathVariable("orderid") String orderid,
-                           @RequestBody Map<String, Object> request) {
-        Map<String, Object> orderMap = (Map<String, Object>) request.get("order");
-        Map<String, Object> orderItemMap = (Map<String, Object>) request.get("orderItem");
-
-        OrderTO oto = new OrderTO();
-        oto.setOrderId(Long.parseLong(orderid));
-        oto.setEmail((String) orderMap.get("email"));
-        oto.setDate(LocalDate.now());
-        oto.setAddress((String) orderMap.get("address"));
-        oto.setZipcode((String) orderMap.get("zipcode"));
-
-        OrderItemTO oito = new OrderItemTO();
-        oito.setOrderId(Long.parseLong(orderid));
-        oito.setQuantity(Integer.parseInt((String)orderItemMap.get("quantity")));
-        oito.setProductId(Long.parseLong((String)orderItemMap.get("productId")));
-
-        int flag1 = orderDAO.order_update(oto);
-        int flag2 =  orderDAO.orderitem_update(oito);
-        System.out.println("flag1 : " + flag1 + ",flag2 : " + flag2);
-        return "{\"flag1\" : " + flag1 + ", \"flag2\" : " + flag2 + "}";
+    @PostMapping("/order")
+    @Operation(summary = "주문하기")
+    public ResponseEntity<String> createOrder(@RequestBody OrderRequest orderRequest) {
+        orderDAO.createOrder(orderRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body("주문이 성공적으로 생성되었습니다.");
     }
 
-    @DeleteMapping("/order/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable long id) {
-        boolean isDeleted = orderDAO.deleteOrder(id);
-        if (isDeleted) {
-            return new ResponseEntity<>("order delete success", HttpStatus.OK);
+    @PutMapping("/order/{orderItemId}")
+    @Operation(summary = "해당 orderId의 주문 수정")
+    public ResponseEntity<String> putOrder(@PathVariable String orderItemId,
+                                           @RequestBody OrderRequest orderRequest) {
+        orderRequest.getOrder().setOrderId(Long.parseLong(orderItemId));
+
+        int updateResult = orderDAO.updateOrder(orderRequest);
+
+        if (updateResult > 0) {
+            return ResponseEntity.ok("주문이 성공적으로 수정되었습니다.");
         } else {
-            return new ResponseEntity<>("order not found", HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("주문을 찾을 수 없습니다.");
         }
     }
 
-    @GetMapping("/orders/{id}/show")
-    public String showProduct(@PathVariable String id) {
-        return "Showing details for order ID: " + id; // 실제 제품 상세정보로 대체 필요
+    @DeleteMapping("/order/{id}")
+    @Operation(summary = "해당 orderid의 주문 삭제")
+    public ResponseEntity<String> deleteOrder(@PathVariable long id) {
+        boolean isDeleted = orderDAO.deleteOrder(id);
+
+        if (isDeleted) {
+            return new ResponseEntity<>("주문이 성공적으로 삭제되었습니다.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("주문을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        }
     }
+
 }

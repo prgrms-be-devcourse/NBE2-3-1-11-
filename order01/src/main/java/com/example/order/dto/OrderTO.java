@@ -7,10 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 
 @Getter
@@ -25,7 +21,6 @@ public class OrderTO {
     private LocalDate date;
     private String address;
     private String zipcode;
-
     private int totalPrice;
 
 }

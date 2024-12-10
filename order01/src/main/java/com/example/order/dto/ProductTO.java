@@ -15,4 +15,5 @@ public class ProductTO {
     private long productId;
     private String name;
     private int price;
+    private String imgsrc;
 }
